@@ -1,0 +1,58 @@
+. isa.xxx
+
+= rrr   0b111
+= rrrr  0b1000
+= cccc  0b0100
+= aaaa1 0b0010
+= aaaa2 0b0001
+= aaaa3 0b1110
+= dddd  0b1101
+= dddd1 0b1011
+= dddd2 0b0111
+
+NOP
+JCN cccc    aaaa2   aaaa1
+FIM rrr 0b0 dddd2   dddd1
+FIN rrr 0b0
+JIN rrr 0b1
+JUN aaaa3   aaaa2   aaaa1
+JMS aaaa3   aaaa2   aaaa1
+INC rrrr
+ISZ rrrr    aaaa2   aaaa1
+ADD rrrr
+SUB rrrr
+LD  rrrr
+XCH rrrr
+BBL dddd
+LDM dddd
+CLB
+CLC
+IAC
+CMC
+CMA
+RAL
+RAR
+TCC
+DAC
+TCS
+STC
+DAA
+KBP
+DCL
+SRC rrr 0b1
+WRM
+WMP
+WRR
+WPM
+WR0
+WR1
+WR2
+WR3
+SBM
+RDM
+RDR
+ADM
+RD0
+RD1
+RD2
+RD3
