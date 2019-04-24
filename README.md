@@ -7,7 +7,7 @@ Requirements
 
 * Go (>= 1.10)
 
-XXX is written by Go only with standard packages.
+4004 is written by Go only with standard packages.
 So, you can build XXX by:
 ```
 $ go build
