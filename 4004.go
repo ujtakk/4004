@@ -21,6 +21,7 @@ func usage(exitcode int) {
 
 type Option struct {
   help bool
+  show bool
   src string
 }
 
@@ -28,6 +29,7 @@ func newOption() *Option {
   opt := new(Option)
 
   flag.BoolVar(&opt.help, "h", false, "Show usage")
+  flag.BoolVar(&opt.show, "s", false, "Interpret sources in dry (show only)")
 
   flag.Parse()
 

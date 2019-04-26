@@ -9,22 +9,49 @@ import (
 func (x *CPU) nop() {
 }
 
+// NOTE: OK
 func (x *CPU) jcn(cond byte, addr2 byte, addr1 byte) {
+  switch {
+  case (cond & 001 > 0) && (x.test == 0): fallthrough
+  case (cond & 002 > 0) && (x.carry == 1): fallthrough
+  case (cond & 004 > 0) && (x.accum == 0): fallthrough
+  case (cond & 011 > 0) && (x.test != 0): fallthrough
+  case (cond & 012 > 0) && (x.carry != 1): fallthrough
+  case (cond & 014 > 0) && (x.accum != 0):
+    addr := uint16(addr2) << 4 | uint16(addr1) << 0
+    x.pcounter = (x.pcounter & 0x0F00) | addr
+  }
 }
 
+// NOTE: OK
 func (x *CPU) fim(reg byte, data2 byte, data1 byte) {
+  reg_addr := reg << 1
+  x.regs[reg_addr+0] = data2
+  x.regs[reg_addr+1] = data1
 }
 
+// NOTE: OK
 func (x *CPU) fin(reg byte) {
+  reg_addr := reg << 1
+  rom_addr := uint16(x.regs[0]) << 4 | uint16(x.regs[1]) << 0
+  data := x.rom[rom_addr]
+  x.regs[reg_addr+0] = (data & 0xF0) >> 4
+  x.regs[reg_addr+1] = (data & 0x0F) >> 0
 }
 
+// NOTE: OK
 func (x *CPU) jin(reg byte) {
+  reg_addr := reg << 1
+  addr2 := x.regs[reg_addr+0]
+  addr1 := x.regs[reg_addr+1]
+  addr := uint16(addr2) << 4 | uint16(addr1) << 0
+  x.pcounter = (x.pcounter & 0x0F00) | addr
 }
 
 // NOTE: OK
 func (x *CPU) jun(addr3 byte, addr2 byte, addr1 byte) {
   addr := uint16(addr3) << 8 | uint16(addr2) << 4 | uint16(addr1) << 0
-  x.rom_addr = addr
+  x.pcounter = addr
 }
 
 func (x *CPU) jms(addr3 byte, addr2 byte, addr1 byte) {
@@ -32,10 +59,16 @@ func (x *CPU) jms(addr3 byte, addr2 byte, addr1 byte) {
 
 // NOTE: OK
 func (x *CPU) inc(reg byte) {
-  x.regs[reg]++
+  x.regs[reg] = (x.regs[reg] + 1) & 0x0F
 }
 
+// NOTE: OK
 func (x *CPU) isz(reg byte, addr2 byte, addr1 byte) {
+  x.regs[reg] = (x.regs[reg] + 1) & 0x0F
+  if x.regs[reg] > 0 {
+    addr := uint16(addr2) << 4 | uint16(addr1) << 0
+    x.pcounter = addr
+  }
 }
 
 func (x *CPU) add(reg byte) {
@@ -100,7 +133,10 @@ func (x *CPU) rar() {
   x.accum >>= 1
 }
 
+// NOTE: OK
 func (x *CPU) tcc() {
+  x.accum = x.carry
+  x.carry = 0
 }
 
 // NOTE: OK
@@ -116,7 +152,11 @@ func (x *CPU) stc() {
   x.carry = 1
 }
 
+// NOTE: OK
 func (x *CPU) daa() {
+  if 0xA <= x.accum && x.accum <= 0xF {
+    x.accum += 6
+  }
 }
 
 func (x *CPU) kbp() {
