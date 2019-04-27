@@ -1,10 +1,5 @@
 package main
 
-import (
-  // "fmt"
-  "bufio"
-)
-
 // NOTE: OK
 func (x *CPU) nop() {
 }
@@ -12,14 +7,14 @@ func (x *CPU) nop() {
 // NOTE: OK
 func (x *CPU) jcn(cond byte, addr2 byte, addr1 byte) {
   switch {
-  case (cond & 001 > 0) && (x.test == 0): fallthrough
-  case (cond & 002 > 0) && (x.carry == 1): fallthrough
-  case (cond & 004 > 0) && (x.accum == 0): fallthrough
-  case (cond & 011 > 0) && (x.test != 0): fallthrough
-  case (cond & 012 > 0) && (x.carry != 1): fallthrough
-  case (cond & 014 > 0) && (x.accum != 0):
+  case (cond & 001 == 001) && (x.test == 0): fallthrough
+  case (cond & 002 == 002) && (x.carry == 1): fallthrough
+  case (cond & 004 == 004) && (x.accum == 0): fallthrough
+  case (cond & 011 == 011) && (x.test != 0): fallthrough
+  case (cond & 012 == 012) && (x.carry != 1): fallthrough
+  case (cond & 014 == 014) && (x.accum != 0):
     addr := uint16(addr2) << 4 | uint16(addr1) << 0
-    x.pcounter = (x.pcounter & 0x0F00) | addr
+    *x.pcounter = (*x.pcounter & 0x0F00) | addr
   }
 }
 
@@ -45,16 +40,19 @@ func (x *CPU) jin(reg byte) {
   addr2 := x.regs[reg_addr+0]
   addr1 := x.regs[reg_addr+1]
   addr := uint16(addr2) << 4 | uint16(addr1) << 0
-  x.pcounter = (x.pcounter & 0x0F00) | addr
+  *x.pcounter = (*x.pcounter & 0x0F00) | addr
 }
 
 // NOTE: OK
 func (x *CPU) jun(addr3 byte, addr2 byte, addr1 byte) {
   addr := uint16(addr3) << 8 | uint16(addr2) << 4 | uint16(addr1) << 0
-  x.pcounter = addr
+  *x.pcounter = addr
 }
 
+// NOTE: OK
 func (x *CPU) jms(addr3 byte, addr2 byte, addr1 byte) {
+  x.spointer++
+  x.pcounter = &x.stack[x.spointer]
 }
 
 // NOTE: OK
@@ -65,16 +63,25 @@ func (x *CPU) inc(reg byte) {
 // NOTE: OK
 func (x *CPU) isz(reg byte, addr2 byte, addr1 byte) {
   x.regs[reg] = (x.regs[reg] + 1) & 0x0F
-  if x.regs[reg] > 0 {
+  if x.regs[reg] != 0 {
     addr := uint16(addr2) << 4 | uint16(addr1) << 0
-    x.pcounter = addr
+    *x.pcounter = addr
   }
 }
 
+// NOTE: OK
 func (x *CPU) add(reg byte) {
+  result := x.accum + x.carry + x.regs[reg]
+  x.accum = (result & 0x0F) >> 0
+  x.carry = (result & 0xF0) >> 4
 }
 
+// NOTE: OK
 func (x *CPU) sub(reg byte) {
+  // result := x.accum - x.regs[reg]
+  result := x.accum + x.carry + (x.regs[reg] ^ 0x0F)
+  x.accum = (result & 0x0F) >> 0
+  x.carry = (result & 0xF0) >> 4
 }
 
 // NOTE: OK
@@ -87,7 +94,10 @@ func (x *CPU) xch(reg byte) {
   x.accum, x.regs[reg] = x.regs[reg], x.accum
 }
 
+// NOTE: OK
 func (x *CPU) bbl(data byte) {
+  x.spointer--
+  x.pcounter = &x.stack[x.spointer]
 }
 
 // NOTE: OK
@@ -113,12 +123,12 @@ func (x *CPU) iac() {
 
 // NOTE: OK
 func (x *CPU) cmc() {
-  x.carry = ^x.carry
+  x.carry = x.carry ^ 0x0F
 }
 
 // NOTE: OK
 func (x *CPU) cma() {
-  x.accum = ^x.accum
+  x.accum = x.accum ^ 0x0F
 }
 
 // NOTE: OK
@@ -135,7 +145,10 @@ func (x *CPU) rar() {
 
 // NOTE: OK
 func (x *CPU) tcc() {
-  x.accum = x.carry
+  switch x.carry {
+  case 0x1: x.accum = 0x1
+  case 0x0: x.accum = 0x0
+  }
   x.carry = 0
 }
 
@@ -144,7 +157,13 @@ func (x *CPU) dac() {
   x.accum--
 }
 
+// NOTE: OK
 func (x *CPU) tcs() {
+  switch x.carry {
+  case 0x1: x.accum = 0x9
+  case 0x0: x.accum = 0xA
+  }
+  x.carry = 0
 }
 
 // NOTE: OK
@@ -159,16 +178,34 @@ func (x *CPU) daa() {
   }
 }
 
+// NOTE: OK
 func (x *CPU) kbp() {
+  switch x.accum {
+  case 0x0: x.accum = 0x0
+  case 0x1: x.accum = 0x1
+  case 0x2: x.accum = 0x2
+  case 0x4: x.accum = 0x3
+  case 0x8: x.accum = 0x4
+  default: x.accum = 0xF
+  }
 }
 
+// NOTE: OK
 func (x *CPU) dcl() {
+  x.ctrl = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) src(reg byte) {
+  reg_addr := reg << 1
+  addr2 := x.regs[reg_addr+0]
+  addr1 := x.regs[reg_addr+1]
+  addr := uint8(addr2) << 4 | uint8(addr1) << 0
+  x.ram_ctrl = addr
 }
 
 func (x *CPU) wrm() {
+  x.rams[x.ctrl][x.ram_ctrl] = x.accum
 }
 
 func (x *CPU) wmp() {
@@ -180,16 +217,24 @@ func (x *CPU) wrr() {
 func (x *CPU) wpm() {
 }
 
+// NOTE: OK
 func (x *CPU) wr0() {
+  x.rams[x.ctrl][16] = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) wr1() {
+  x.rams[x.ctrl][17] = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) wr2() {
+  x.rams[x.ctrl][18] = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) wr3() {
+  x.rams[x.ctrl][19] = x.accum
 }
 
 func (x *CPU) sbm() {
@@ -204,21 +249,29 @@ func (x *CPU) rdr() {
 func (x *CPU) adm() {
 }
 
+// NOTE: OK
 func (x *CPU) rd0() {
+  x.accum = x.rams[x.ctrl][16]
 }
 
+// NOTE: OK
 func (x *CPU) rd1() {
+  x.accum = x.rams[x.ctrl][17]
 }
 
+// NOTE: OK
 func (x *CPU) rd2() {
+  x.accum = x.rams[x.ctrl][18]
 }
 
+// NOTE: OK
 func (x *CPU) rd3() {
+  x.accum = x.rams[x.ctrl][19]
 }
 
-func (x *CPU) evalMachine(op byte, r *bufio.Reader) {
-  opr := (op & 0xF0) >> 4
-  opa := (op & 0x0F) >> 0
+func (x *CPU) evalMachine(inst byte) {
+  opr := (inst & 0xF0) >> 4
+  opa := (inst & 0x0F) >> 0
   switch opr {
   case 0x0:
     if opa != 0x0 {
@@ -226,7 +279,8 @@ func (x *CPU) evalMachine(op byte, r *bufio.Reader) {
     }
     x.nop()
   case 0x1:
-    addr, _ := r.ReadByte()
+    *x.pcounter++
+    addr := x.rom[*x.pcounter]
     addrr := (addr & 0xF0) >> 4
     addra := (addr & 0x0F) >> 0
     x.jcn(opa, addrr, addra)
@@ -234,7 +288,8 @@ func (x *CPU) evalMachine(op byte, r *bufio.Reader) {
     reg := (opa & 0xE) >> 1
     flag := (opa & 0x1) >> 0
     if flag == 0 {
-      data, _ := r.ReadByte()
+      *x.pcounter++
+      data := x.rom[*x.pcounter]
       datar := (data & 0xF0) >> 4
       dataa := (data & 0x0F) >> 0
       x.fim(reg, datar, dataa)
@@ -250,18 +305,21 @@ func (x *CPU) evalMachine(op byte, r *bufio.Reader) {
       x.jin(reg)
     }
   case 0x4:
-    addr, _ := r.ReadByte()
+    *x.pcounter++
+    addr := x.rom[*x.pcounter]
     addrr := (addr & 0xF0) >> 4
     addra := (addr & 0x0F) >> 0
     x.jun(opa, addrr, addra)
   case 0x5:
-    addr, _ := r.ReadByte()
+    *x.pcounter++
+    addr := x.rom[*x.pcounter]
     addrr := (addr & 0xF0) >> 4
     addra := (addr & 0x0F) >> 0
     x.jms(opa, addrr, addra)
   case 0x6: x.inc(opa)
   case 0x7:
-    addr, _ := r.ReadByte()
+    *x.pcounter++
+    addr := x.rom[*x.pcounter]
     addrr := (addr & 0xF0) >> 4
     addra := (addr & 0x0F) >> 0
     x.isz(opa, addrr, addra)
@@ -274,8 +332,8 @@ func (x *CPU) evalMachine(op byte, r *bufio.Reader) {
   }
 }
 
-func (x *CPU) evalIORAM(op byte) {
-  switch op {
+func (x *CPU) evalIORAM(inst byte) {
+  switch inst {
   case 0xE0: x.wrm()
   case 0xE1: x.wmp()
   case 0xE2: x.wrr()
@@ -295,8 +353,8 @@ func (x *CPU) evalIORAM(op byte) {
   }
 }
 
-func (x *CPU) evalAccum(op byte) {
-  switch op {
+func (x *CPU) evalAccum(inst byte) {
+  switch inst {
   case 0xF0: x.clb()
   case 0xF1: x.clc()
   case 0xF2: x.iac()
@@ -314,16 +372,18 @@ func (x *CPU) evalAccum(op byte) {
   }
 }
 
-func (x *CPU) eval(r *bufio.Reader) {
-  for op, err := r.ReadByte(); err == nil; op, err = r.ReadByte() {
-    opr := (op & 0xF0) >> 4
+func (x *CPU) eval() {
+  for {
+    inst := x.rom[*x.pcounter]
+    opr := (inst & 0xF0) >> 4
     switch opr {
     case 0xE:
-      x.evalIORAM(op)
+      x.evalIORAM(inst)
     case 0xF:
-      x.evalAccum(op)
+      x.evalAccum(inst)
     default:
-      x.evalMachine(op, r)
+      x.evalMachine(inst)
     }
+    *x.pcounter++
   }
 }
