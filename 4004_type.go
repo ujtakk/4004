@@ -38,7 +38,7 @@ func NewCPU() *CPU {
 
   x.rams = make([][]byte, RAM_LINE)
   for i := 0; i < RAM_LINE; i++ {
-    x.rams = make([][]byte, RAM_SIZE)
+    x.rams[i] = make([]byte, RAM_SIZE)
   }
 
   x.stack = make([]uint16, STACK_SIZE)
