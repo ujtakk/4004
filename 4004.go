@@ -8,7 +8,7 @@ import (
 )
 
 func usage(exitcode int) {
-  message := fmt.Sprintf(`usage: 4004 [-h] {src}`)
+  message := fmt.Sprintf(`usage: 4004 [-h] [-s] [-o {dst}] {src}`)
 
   if exitcode == 0 {
     fmt.Println(message)
@@ -23,6 +23,7 @@ type Option struct {
   help bool
   show bool
   src string
+  dst string
 }
 
 func newOption() *Option {
@@ -30,6 +31,7 @@ func newOption() *Option {
 
   flag.BoolVar(&opt.help, "h", false, "Show usage")
   flag.BoolVar(&opt.show, "s", false, "Interpret sources in dry (show only)")
+  flag.StringVar(&opt.dst, "o", "", "Specify target")
 
   flag.Parse()
 
@@ -57,8 +59,15 @@ func main() {
     return
   }
 
+  var dst_file *os.File
+  if opt.dst == "" {
+    dst_file = os.Stdout
+  } else {
+    dst_file, _ = os.Create(opt.dst)
+  }
+
   cpu := NewCPU()
   cpu.LoadROM(src_file)
-
   cpu.Run()
+  cpu.SaveRAM(dst_file)
 }

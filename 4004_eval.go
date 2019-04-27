@@ -204,17 +204,24 @@ func (x *CPU) src(reg byte) {
   x.ram_ctrl = addr
 }
 
+// NOTE: OK
 func (x *CPU) wrm() {
   x.rams[x.ctrl][x.ram_ctrl] = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) wmp() {
+  x.out = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) wrr() {
+  x.io = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) wpm() {
+  panic("not implemented for 4004")
 }
 
 // NOTE: OK
@@ -250,7 +257,9 @@ func (x *CPU) rdm() {
   x.accum = x.rams[x.ctrl][x.ram_ctrl]
 }
 
+// NOTE: OK
 func (x *CPU) rdr() {
+  x.accum = x.io
 }
 
 // NOTE: OK

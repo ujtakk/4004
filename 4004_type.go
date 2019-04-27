@@ -7,9 +7,15 @@ import (
 
 const (
   ROM_SIZE = 4096
+  RAM_LINE = 4
+  RAM_SIZE = 20
+  NUM_REGS = 16
+  STACK_SIZE = 4
 )
 
 type CPU struct{
+  io uint8
+  out uint8
   test uint8
   ctrl uint8
   ram_ctrl uint8
@@ -17,16 +23,27 @@ type CPU struct{
   carry uint8
   spointer uint8
   pcounter *uint16
-  rom []byte
   regs []byte
+  rom []byte
   rams [][]byte
   stack []uint16
 }
 
 func NewCPU() *CPU {
   x := new(CPU)
-  x.pcounter = &x.stack[0]
+
+  x.regs = make([]byte, NUM_REGS)
+
   x.rom = make([]byte, ROM_SIZE)
+
+  x.rams = make([][]byte, RAM_LINE)
+  for i := 0; i < RAM_LINE; i++ {
+    x.rams = make([][]byte, RAM_SIZE)
+  }
+
+  x.stack = make([]uint16, STACK_SIZE)
+  x.pcounter = &x.stack[0]
+
   return x
 }
 
@@ -48,4 +65,12 @@ func (x *CPU) Run() {
 }
 
 func (x *CPU) SaveRAM(w io.Writer) {
+  for i := 0; i < RAM_LINE; i++ {
+    n, err := w.Write(x.rams[i])
+    if err != nil {
+      panic(err)
+    } else if n != RAM_SIZE {
+      panic("data was not saved correctly")
+    }
+  }
 }

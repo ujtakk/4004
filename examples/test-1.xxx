@@ -43,7 +43,7 @@ SRC     rrr     SRC_BIT
 WRM
 WMP
 WRR
-WPM
+# WPM
 WR0
 WR1
 WR2
