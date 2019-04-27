@@ -14,19 +14,22 @@
 # Fetch immediate (direct) from ROM Data D2 D2 D2 D2 D1 D1 D1 D1
 # to index register pair location RRR.
 ################################################################################
-= FIM   0x2
+= FIM       0x2
+= FIM_BIT   0b0
 
 ################################################################################
 # Fetch indirect from ROM. Send contents of index register pair location 0
 # out as an address. Data fetched is placed into register pair location RRR.
 ################################################################################
-= FIN   0x3
+= FIN       0x3
+= FIN_BIT   0b0
 
 ################################################################################
 # Jump indirect. Send contents of register pair RRR out as an address
 # at A1 and A2 time in the instruction cycle.
 ################################################################################
-= JIN   0x3
+= JIN       0x3
+= JIN_BIT   0b1
 
 ################################################################################
 # Jump unconditional to ROM address A3 A3 A3 A3 A2 A2 A2 A2 A1 A1 A1 A1.
@@ -156,7 +159,8 @@
 # Send register control. Send the address (contents of index register pair RRR)
 # to ROM and RAM at X2 and X3 time in the instruction cycle.
 ################################################################################
-= SRC   0x2
+= SRC       0x2
+= SRC_BIT   0b1
 
 ################################################################################
 # Write the contents of the accumulator into the previously selected

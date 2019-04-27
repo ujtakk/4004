@@ -11,20 +11,20 @@
 = dddd2 0b0111
 
 NOP
-JCN cccc    aaaa2   aaaa1
-FIM rrr 0b0 dddd2   dddd1
-FIN rrr 0b0
-JIN rrr 0b1
-JUN aaaa3   aaaa2   aaaa1
-JMS aaaa3   aaaa2   aaaa1
-INC rrrr
-ISZ rrrr    aaaa2   aaaa1
-ADD rrrr
-SUB rrrr
-LD  rrrr
-XCH rrrr
-BBL dddd
-LDM dddd
+JCN     cccc    aaaa2   aaaa1
+FIM     rrr     FIM_BIT dddd2   dddd1
+FIN     rrr     FIN_BIT
+JIN     rrr     JIN_BIT
+JUN     aaaa3   aaaa2   aaaa1
+JMS     aaaa3   aaaa2   aaaa1
+INC     rrrr
+ISZ     rrrr    aaaa2   aaaa1
+ADD     rrrr
+SUB     rrrr
+LD      rrrr
+XCH     rrrr
+BBL     dddd
+LDM     dddd
 CLB
 CLC
 IAC
@@ -39,7 +39,7 @@ STC
 DAA
 KBP
 DCL
-SRC rrr 0b1
+SRC     rrr     SRC_BIT
 WRM
 WMP
 WRR
