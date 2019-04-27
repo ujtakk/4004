@@ -1,10 +1,8 @@
 package main
 
-// NOTE: OK
 func (x *CPU) nop() {
 }
 
-// NOTE: OK
 func (x *CPU) jcn(cond byte, addr2 byte, addr1 byte) {
   switch {
   case (cond & 001 == 001) && (x.test == 0): fallthrough
@@ -18,14 +16,12 @@ func (x *CPU) jcn(cond byte, addr2 byte, addr1 byte) {
   }
 }
 
-// NOTE: OK
 func (x *CPU) fim(reg byte, data2 byte, data1 byte) {
   reg_addr := reg << 1
   x.regs[reg_addr+0] = data2
   x.regs[reg_addr+1] = data1
 }
 
-// NOTE: OK
 func (x *CPU) fin(reg byte) {
   reg_addr := reg << 1
   rom_addr := uint16(x.regs[0]) << 4 | uint16(x.regs[1]) << 0
@@ -34,7 +30,6 @@ func (x *CPU) fin(reg byte) {
   x.regs[reg_addr+1] = (data & 0x0F) >> 0
 }
 
-// NOTE: OK
 func (x *CPU) jin(reg byte) {
   reg_addr := reg << 1
   addr2 := x.regs[reg_addr+0]
@@ -43,24 +38,20 @@ func (x *CPU) jin(reg byte) {
   *x.pcounter = (*x.pcounter & 0x0F00) | addr
 }
 
-// NOTE: OK
 func (x *CPU) jun(addr3 byte, addr2 byte, addr1 byte) {
   addr := uint16(addr3) << 8 | uint16(addr2) << 4 | uint16(addr1) << 0
   *x.pcounter = addr
 }
 
-// NOTE: OK
 func (x *CPU) jms(addr3 byte, addr2 byte, addr1 byte) {
   x.spointer++
   x.pcounter = &x.stack[x.spointer]
 }
 
-// NOTE: OK
 func (x *CPU) inc(reg byte) {
   x.regs[reg] = (x.regs[reg] + 1) & 0x0F
 }
 
-// NOTE: OK
 func (x *CPU) isz(reg byte, addr2 byte, addr1 byte) {
   x.regs[reg] = (x.regs[reg] + 1) & 0x0F
   if x.regs[reg] != 0 {
@@ -69,14 +60,12 @@ func (x *CPU) isz(reg byte, addr2 byte, addr1 byte) {
   }
 }
 
-// NOTE: OK
 func (x *CPU) add(reg byte) {
   result := x.accum + x.carry + x.regs[reg]
   x.accum = (result & 0x0F) >> 0
   x.carry = (result & 0xF0) >> 4
 }
 
-// NOTE: OK
 func (x *CPU) sub(reg byte) {
   // result := x.accum - x.regs[reg]
   result := x.accum + x.carry + (x.regs[reg] ^ 0x0F)
@@ -84,66 +73,54 @@ func (x *CPU) sub(reg byte) {
   x.carry = (result & 0xF0) >> 4
 }
 
-// NOTE: OK
 func (x *CPU) ld(reg byte) {
   x.accum = x.regs[reg]
 }
 
-// NOTE: OK
 func (x *CPU) xch(reg byte) {
   x.accum, x.regs[reg] = x.regs[reg], x.accum
 }
 
-// NOTE: OK
 func (x *CPU) bbl(data byte) {
   x.spointer--
   x.pcounter = &x.stack[x.spointer]
 }
 
-// NOTE: OK
 func (x *CPU) ldm(data byte) {
   x.accum = data
 }
 
-// NOTE: OK
 func (x *CPU) clb() {
   x.accum = 0
   x.carry = 0
 }
 
-// NOTE: OK
 func (x *CPU) clc() {
   x.carry = 0
 }
 
-// NOTE: OK
 func (x *CPU) iac() {
   x.accum++
 }
 
-// NOTE: OK
 func (x *CPU) cmc() {
   x.carry = x.carry ^ 0x0F
 }
 
-// NOTE: OK
 func (x *CPU) cma() {
   x.accum = x.accum ^ 0x0F
 }
 
-// NOTE: OK
 func (x *CPU) ral() {
   x.carry <<= 1
   x.accum <<= 1
 }
 
-// NOTE: OK
 func (x *CPU) rar() {
   x.carry >>= 1
   x.accum >>= 1
 }
 
-// NOTE: OK
 func (x *CPU) tcc() {
   switch x.carry {
   case 0x1: x.accum = 0x1
@@ -152,12 +129,10 @@ func (x *CPU) tcc() {
   x.carry = 0
 }
 
-// NOTE: OK
 func (x *CPU) dac() {
   x.accum--
 }
 
-// NOTE: OK
 func (x *CPU) tcs() {
   switch x.carry {
   case 0x1: x.accum = 0x9
@@ -166,19 +141,16 @@ func (x *CPU) tcs() {
   x.carry = 0
 }
 
-// NOTE: OK
 func (x *CPU) stc() {
   x.carry = 1
 }
 
-// NOTE: OK
 func (x *CPU) daa() {
   if 0xA <= x.accum && x.accum <= 0xF {
     x.accum += 6
   }
 }
 
-// NOTE: OK
 func (x *CPU) kbp() {
   switch x.accum {
   case 0x0: x.accum = 0x0
@@ -190,12 +162,10 @@ func (x *CPU) kbp() {
   }
 }
 
-// NOTE: OK
 func (x *CPU) dcl() {
   x.ctrl = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) src(reg byte) {
   reg_addr := reg << 1
   addr2 := x.regs[reg_addr+0]
@@ -204,47 +174,38 @@ func (x *CPU) src(reg byte) {
   x.ram_ctrl = addr
 }
 
-// NOTE: OK
 func (x *CPU) wrm() {
   x.rams[x.ctrl][x.ram_ctrl] = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) wmp() {
   x.out = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) wrr() {
   x.io = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) wpm() {
   panic("not implemented for 4004")
 }
 
-// NOTE: OK
 func (x *CPU) wr0() {
   x.rams[x.ctrl][16] = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) wr1() {
   x.rams[x.ctrl][17] = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) wr2() {
   x.rams[x.ctrl][18] = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) wr3() {
   x.rams[x.ctrl][19] = x.accum
 }
 
-// NOTE: OK
 func (x *CPU) sbm() {
   // result := x.accum - x.rams[x.ctrl][x.ram_ctrl]
   result := x.accum + x.carry + (x.rams[x.ctrl][x.ram_ctrl] ^ 0x0F)
@@ -252,39 +213,32 @@ func (x *CPU) sbm() {
   x.carry = (result & 0xF0) >> 4
 }
 
-// NOTE: OK
 func (x *CPU) rdm() {
   x.accum = x.rams[x.ctrl][x.ram_ctrl]
 }
 
-// NOTE: OK
 func (x *CPU) rdr() {
   x.accum = x.io
 }
 
-// NOTE: OK
 func (x *CPU) adm() {
   result := x.accum + x.carry + x.rams[x.ctrl][x.ram_ctrl]
   x.accum = (result & 0x0F) >> 0
   x.carry = (result & 0xF0) >> 4
 }
 
-// NOTE: OK
 func (x *CPU) rd0() {
   x.accum = x.rams[x.ctrl][16]
 }
 
-// NOTE: OK
 func (x *CPU) rd1() {
   x.accum = x.rams[x.ctrl][17]
 }
 
-// NOTE: OK
 func (x *CPU) rd2() {
   x.accum = x.rams[x.ctrl][18]
 }
 
-// NOTE: OK
 func (x *CPU) rd3() {
   x.accum = x.rams[x.ctrl][19]
 }
