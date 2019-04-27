@@ -1,0 +1,27 @@
+. examples/isa.xxx
+
+# Initialize registers
+CLB
+FIM 00 FIM_BIT 0x0 0x1
+FIM 01 FIM_BIT 0x2 0x3
+FIM 02 FIM_BIT 0x4 0x5
+FIM 03 FIM_BIT 0x0 0x0
+FIM 04 FIM_BIT 0x8 0x9
+FIM 05 FIM_BIT 0xA 0xB
+FIM 06 FIM_BIT 0xC 0xD
+FIM 07 FIM_BIT 0xE 0xF
+
+# Set RAM line and address (line 1, address 0x00 by regpair 03)
+LDM 0x1
+DCL
+SRC 03 SRC_BIT
+
+# Perform operations and send the result (3+1+5=9) to RAM
+LDM 0x4
+IAC
+DAC
+KBP
+STC
+ADD 0x5
+WRM
+WR3
