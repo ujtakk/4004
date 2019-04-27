@@ -22,6 +22,14 @@ func (x *CPU) fim(reg byte, data2 byte, data1 byte) {
   x.regs[reg_addr+1] = data1
 }
 
+func (x *CPU) src(reg byte) {
+  reg_addr := reg << 1
+  addr2 := x.regs[reg_addr+0]
+  addr1 := x.regs[reg_addr+1]
+  addr := uint8(addr2) << 4 | uint8(addr1) << 0
+  x.ram_ctrl = addr
+}
+
 func (x *CPU) fin(reg byte) {
   reg_addr := reg << 1
   rom_addr := uint16(x.regs[0]) << 4 | uint16(x.regs[1]) << 0
@@ -164,14 +172,6 @@ func (x *CPU) kbp() {
 
 func (x *CPU) dcl() {
   x.ctrl = x.accum
-}
-
-func (x *CPU) src(reg byte) {
-  reg_addr := reg << 1
-  addr2 := x.regs[reg_addr+0]
-  addr1 := x.regs[reg_addr+1]
-  addr := uint8(addr2) << 4 | uint8(addr1) << 0
-  x.ram_ctrl = addr
 }
 
 func (x *CPU) wrm() {
