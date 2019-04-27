@@ -5,6 +5,7 @@ import (
   "fmt"
   "flag"
   "bufio"
+  "io/ioutil"
 )
 
 func usage(exitcode int) {
@@ -46,11 +47,19 @@ func main() {
     usage(1)
   }
 
-  file, err := os.Open(opt.src)
+  src_file, err := os.Open(opt.src)
   if err != nil {
     panic(err)
   }
 
-  reader := bufio.NewReader(file)
-  show(reader)
+  if opt.show {
+    reader := bufio.NewReader(src_file)
+    show(reader)
+    return
+  }
+
+  cpu := NewCPU()
+  cpu.LoadROM(src_file)
+
+  cpu.Run()
 }

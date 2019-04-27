@@ -25,11 +25,12 @@ func NewCPU() *CPU {
   return x
 }
 
-func (x *CPU) LoadROM() {
+func (x *CPU) LoadROM(r *io.Reader) {
+  rom, _ := ioutil.ReadAll(file)
 }
 
-func (x *CPU) SaveRAM(path string) {
+func (x *CPU) SaveRAM(w *io.Writer) {
 }
 
-func (x *CPU) Exec() {
+func (x *CPU) Run() {
 }
