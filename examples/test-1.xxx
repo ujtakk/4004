@@ -1,5 +1,7 @@
-. isa.xxx
+### ISA Definition
+. examples/isa.xxx
 
+### Aliases
 = rrr   0b111
 = rrrr  0b1000
 = cccc  0b0100
@@ -10,9 +12,11 @@
 = dddd1 0b1011
 = dddd2 0b0111
 
+### Machine Instructions
 NOP
 JCN     cccc    aaaa2   aaaa1
 FIM     rrr     FIM_BIT dddd2   dddd1
+SRC     rrr     SRC_BIT
 FIN     rrr     FIN_BIT
 JIN     rrr     JIN_BIT
 JUN     aaaa3   aaaa2   aaaa1
@@ -25,21 +29,8 @@ LD      rrrr
 XCH     rrrr
 BBL     dddd
 LDM     dddd
-CLB
-CLC
-IAC
-CMC
-CMA
-RAL
-RAR
-TCC
-DAC
-TCS
-STC
-DAA
-KBP
-DCL
-SRC     rrr     SRC_BIT
+
+### I/O and RAM Instructions
 WRM
 WMP
 WRR
@@ -56,3 +47,19 @@ RD0
 RD1
 RD2
 RD3
+
+### Accumulator Group Instructions
+CLB
+CLC
+IAC
+CMC
+CMA
+RAL
+RAR
+TCC
+DAC
+TCS
+STC
+DAA
+KBP
+DCL
