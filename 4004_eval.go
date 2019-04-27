@@ -372,18 +372,14 @@ func (x *CPU) evalAccum(inst byte) {
   }
 }
 
-func (x *CPU) eval() {
-  for {
-    inst := x.rom[*x.pcounter]
-    opr := (inst & 0xF0) >> 4
-    switch opr {
-    case 0xE:
-      x.evalIORAM(inst)
-    case 0xF:
-      x.evalAccum(inst)
-    default:
-      x.evalMachine(inst)
-    }
-    *x.pcounter++
+func (x *CPU) eval(inst byte) {
+  opr := (inst & 0xF0) >> 4
+  switch opr {
+  case 0xE:
+    x.evalIORAM(inst)
+  case 0xF:
+    x.evalAccum(inst)
+  default:
+    x.evalMachine(inst)
   }
 }

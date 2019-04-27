@@ -1,5 +1,10 @@
 package main
 
+import (
+  "io"
+  "io/ioutil"
+)
+
 const (
   ROM_SIZE = 4096
 )
@@ -25,12 +30,22 @@ func NewCPU() *CPU {
   return x
 }
 
-func (x *CPU) LoadROM(r *io.Reader) {
-  rom, _ := ioutil.ReadAll(file)
-}
+func (x *CPU) LoadROM(r io.Reader) {
+  data, _ := ioutil.ReadAll(r)
+  if len(data) > ROM_SIZE {
+    panic("exceeded the ROM size")
+  }
 
-func (x *CPU) SaveRAM(w *io.Writer) {
+  copy(x.rom, data)
 }
 
 func (x *CPU) Run() {
+  for *x.pcounter < ROM_SIZE {
+    inst := x.rom[*x.pcounter]
+    x.eval(inst)
+    *x.pcounter++
+  }
+}
+
+func (x *CPU) SaveRAM(w io.Writer) {
 }

@@ -5,7 +5,6 @@ import (
   "fmt"
   "flag"
   "bufio"
-  "io/ioutil"
 )
 
 func usage(exitcode int) {
