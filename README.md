@@ -13,6 +13,8 @@ So, you can build 4004 by:
 $ go build
 ```
 
+Examples are written as [XXX](https://github.com/ujtakk/xxx) programs.
+
 License
 --------------------------------------------------
 

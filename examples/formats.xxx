@@ -2,7 +2,7 @@
 . examples/isa.xxx
 
 ### Aliases
-= rrr   03
+= rrr   0b011
 = rrrr  0b1000
 = cccc  0b0000
 = aaaa1 0b0010
