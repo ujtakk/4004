@@ -237,16 +237,27 @@ func (x *CPU) wr3() {
   x.rams[x.ctrl][19] = x.accum
 }
 
+// NOTE: OK
 func (x *CPU) sbm() {
+  // result := x.accum - x.rams[x.ctrl][x.ram_ctrl]
+  result := x.accum + x.carry + (x.rams[x.ctrl][x.ram_ctrl] ^ 0x0F)
+  x.accum = (result & 0x0F) >> 0
+  x.carry = (result & 0xF0) >> 4
 }
 
+// NOTE: OK
 func (x *CPU) rdm() {
+  x.accum = x.rams[x.ctrl][x.ram_ctrl]
 }
 
 func (x *CPU) rdr() {
 }
 
+// NOTE: OK
 func (x *CPU) adm() {
+  result := x.accum + x.carry + x.rams[x.ctrl][x.ram_ctrl]
+  x.accum = (result & 0x0F) >> 0
+  x.carry = (result & 0xF0) >> 4
 }
 
 // NOTE: OK
