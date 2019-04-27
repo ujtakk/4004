@@ -52,6 +52,7 @@ func main() {
   if err != nil {
     panic(err)
   }
+  defer src_file.Close()
 
   if opt.show {
     reader := bufio.NewReader(src_file)
@@ -65,6 +66,7 @@ func main() {
   } else {
     dst_file, _ = os.Create(opt.dst)
   }
+  defer dst_file.Close()
 
   cpu := NewCPU()
   cpu.LoadROM(src_file)
