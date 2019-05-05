@@ -30,7 +30,7 @@ XCH     rrrr
 BBL     dddd
 LDM     dddd
 
-### I/O and RAM Instructions
+### Input/Output and RAM Instructions
 WRM
 WMP
 WRR
